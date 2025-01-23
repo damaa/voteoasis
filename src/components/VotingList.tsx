@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { VotingItem } from "./VotingItem"
+import { VotingItem } from "@/components/VotingItem"
 import { supabase } from "@/lib/supabase/client"
 import type { Tables } from "@/lib/supabase/schema"
 
@@ -86,5 +86,5 @@ export const VotingList = ({ list }: VotingListProps) => {
         ))}
       </div>
     </div>
-  );
-};
+  )
+}

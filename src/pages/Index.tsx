@@ -5,11 +5,17 @@ import { VotingList } from "@/components/VotingList"
 import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabase/client"
 import type { Tables } from "@/lib/supabase/schema"
+import { Input } from "@/components/ui/input"
+import { useToast } from "@/components/ui/use-toast"
 
 const Index = () => {
-  const { user, signInWithGoogle, signOut, loading } = useAuth()
+  const { user, signIn, signUp, signOut, loading } = useAuth()
   const [lists, setLists] = useState<Tables['lists'][]>([])
   const [loadingLists, setLoadingLists] = useState(true)
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [isSignUp, setIsSignUp] = useState(false)
+  const { toast } = useToast()
 
   useEffect(() => {
     async function fetchLists() {
@@ -31,6 +37,27 @@ const Index = () => {
     fetchLists()
   }, [])
 
+  const handleAuth = async (e: React.FormEvent) => {
+    e.preventDefault()
+    try {
+      if (isSignUp) {
+        await signUp(email, password)
+        toast({
+          title: "Check your email",
+          description: "We sent you a confirmation link.",
+        })
+      } else {
+        await signIn(email, password)
+      }
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message,
+      })
+    }
+  }
+
   if (loading || loadingLists) {
     return <div className="flex items-center justify-center min-h-screen">Loading...</div>
   }
@@ -41,7 +68,36 @@ const Index = () => {
         {user ? (
           <Button onClick={signOut}>Sign Out</Button>
         ) : (
-          <Button onClick={signInWithGoogle}>Sign in with Google</Button>
+          <form onSubmit={handleAuth} className="space-y-4 sm:space-y-0 sm:space-x-4 flex flex-col sm:flex-row items-end">
+            <div className="space-y-2">
+              <Input
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+              <Input
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+            <div className="space-x-2">
+              <Button type="submit">
+                {isSignUp ? "Sign Up" : "Sign In"}
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => setIsSignUp(!isSignUp)}
+              >
+                {isSignUp ? "Have an account? Sign In" : "Need an account? Sign Up"}
+              </Button>
+            </div>
+          </form>
         )}
       </div>
 

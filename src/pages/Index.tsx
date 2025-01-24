@@ -44,7 +44,7 @@ const Index = () => {
         await signUp(email, password)
         toast({
           title: "Success!",
-          description: "Please check your email for the confirmation link before signing in.",
+          description: "Your account has been created successfully.",
         })
         setIsSignUp(false)
       } else {
@@ -57,16 +57,11 @@ const Index = () => {
     } catch (error: any) {
       console.error('Auth error:', error)
       
-      // Try to parse the error body if it exists
-      let errorMessage = error.message
+      let errorMessage = "Authentication failed. Please try again."
       try {
         if (error.body) {
           const errorBody = JSON.parse(error.body)
-          if (errorBody.code === "email_not_confirmed") {
-            errorMessage = "Please check your email and confirm your account before signing in."
-          } else if (errorBody.message) {
-            errorMessage = errorBody.message
-          }
+          errorMessage = errorBody.message || errorMessage
         }
       } catch (e) {
         console.error('Error parsing error body:', e)

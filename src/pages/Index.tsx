@@ -6,7 +6,7 @@ import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabase/client"
 import type { Tables } from "@/lib/supabase/schema"
 import { Input } from "@/components/ui/input"
-import { useToast } from "@/components/ui/use-toast"
+import { useToast } from "@/hooks/use-toast"
 
 const Index = () => {
   const { user, signIn, signUp, signOut, loading } = useAuth()
@@ -50,28 +50,24 @@ const Index = () => {
         setIsSignUp(false)
       } else {
         await signIn(email, password)
+        toast({
+          title: "Welcome back!",
+          description: "You have successfully signed in.",
+        })
       }
     } catch (error: any) {
-      // Handle specific error cases
-      if (error.message.includes("Email not confirmed")) {
-        toast({
-          variant: "destructive",
-          title: "Email not confirmed",
-          description: "Please check your email and click the confirmation link before signing in.",
-        })
-      } else if (error.message.includes("Invalid login credentials")) {
-        toast({
-          variant: "destructive",
-          title: "Invalid credentials",
-          description: "Please check your email and password and try again.",
-        })
-      } else {
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: error.message,
-        })
+      console.error('Auth error:', error)
+      // Parse the error message from the JSON string if needed
+      let errorMessage = error.message
+      if (error.message.includes('"code":"email_not_confirmed"')) {
+        errorMessage = "Please check your email and confirm your account before signing in."
       }
+      
+      toast({
+        variant: "destructive",
+        title: "Authentication Error",
+        description: errorMessage,
+      })
     }
   }
 

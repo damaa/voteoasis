@@ -12,7 +12,6 @@ export type Database = {
       items: {
         Row: {
           created_at: string
-          description: string | null
           id: string
           list_id: string
           title: string
@@ -20,7 +19,6 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          description?: string | null
           id?: string
           list_id: string
           title: string
@@ -28,7 +26,6 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          description?: string | null
           id?: string
           list_id?: string
           title?: string

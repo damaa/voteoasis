@@ -1,7 +1,6 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
 import { supabase } from "@/lib/supabase/client"
 import { useToast } from "@/components/ui/use-toast"
 import type { Tables } from "@/lib/supabase/schema"
@@ -13,7 +12,6 @@ interface AddItemFormProps {
 
 export const AddItemForm = ({ listId, onItemAdded }: AddItemFormProps) => {
   const [title, setTitle] = useState("")
-  const [description, setDescription] = useState("")
   const { toast } = useToast()
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -26,7 +24,6 @@ export const AddItemForm = ({ listId, onItemAdded }: AddItemFormProps) => {
           {
             list_id: listId,
             title,
-            description,
           },
         ])
 
@@ -38,7 +35,6 @@ export const AddItemForm = ({ listId, onItemAdded }: AddItemFormProps) => {
       })
 
       setTitle("")
-      setDescription("")
       onItemAdded()
     } catch (error) {
       toast({
@@ -59,15 +55,6 @@ export const AddItemForm = ({ listId, onItemAdded }: AddItemFormProps) => {
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Enter item title"
           required
-        />
-      </div>
-      <div className="space-y-2">
-        <label htmlFor="description" className="text-sm font-medium">Description</label>
-        <Textarea
-          id="description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          placeholder="Enter item description"
         />
       </div>
       <Button type="submit">Add Item</Button>

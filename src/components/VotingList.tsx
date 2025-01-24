@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { VotingItem } from "@/components/VotingItem"
+import { AddItemForm } from "@/components/AddItemForm"
 import { supabase } from "@/lib/supabase/client"
 import type { Tables } from "@/lib/supabase/schema"
+import { useAuth } from "@/hooks/useAuth"
 
 interface VotingListProps {
   list: Tables['lists']
@@ -12,25 +14,26 @@ export const VotingList = ({ list }: VotingListProps) => {
   const [items, setItems] = useState<Tables['items'][]>([])
   const [votedItems, setVotedItems] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
+  const { user } = useAuth()
   const maxVotes = 3
 
-  useEffect(() => {
-    async function fetchItems() {
-      try {
-        const { data, error } = await supabase
-          .from('items')
-          .select('*')
-          .eq('list_id', list.id)
+  const fetchItems = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('items')
+        .select('*')
+        .eq('list_id', list.id)
 
-        if (error) throw error
-        setItems(data || [])
-      } catch (error) {
-        console.error('Error fetching items:', error)
-      } finally {
-        setLoading(false)
-      }
+      if (error) throw error
+      setItems(data || [])
+    } catch (error) {
+      console.error('Error fetching items:', error)
+    } finally {
+      setLoading(false)
     }
+  }
 
+  useEffect(() => {
     fetchItems()
   }, [list.id])
 
@@ -65,6 +68,13 @@ export const VotingList = ({ list }: VotingListProps) => {
         <h1 className="text-3xl font-bold">{list.title}</h1>
         <p className="text-muted-foreground">{list.description}</p>
       </div>
+
+      {user && user.id === list.user_id && (
+        <div className="bg-muted p-4 rounded-lg">
+          <h2 className="text-xl font-semibold mb-4">Add New Item</h2>
+          <AddItemForm listId={list.id} onItemAdded={fetchItems} />
+        </div>
+      )}
 
       <Alert>
         <AlertTitle>Voting Rules</AlertTitle>

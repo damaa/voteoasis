@@ -6,7 +6,12 @@ import { Textarea } from "@/components/ui/textarea"
 import { supabase } from '@/lib/supabase/client'
 import { useToast } from "@/components/ui/use-toast"
 
-export function AdminDashboard({ userId }: { userId: string }) {
+interface AdminDashboardProps {
+  userId: string;
+  onListCreated?: () => void;
+}
+
+export function AdminDashboard({ userId, onListCreated }: AdminDashboardProps) {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const { toast } = useToast()
@@ -34,6 +39,9 @@ export function AdminDashboard({ userId }: { userId: string }) {
 
       setTitle('')
       setDescription('')
+      
+      // Call the callback to refresh the lists
+      onListCreated?.()
     } catch (error) {
       toast({
         title: "Error",

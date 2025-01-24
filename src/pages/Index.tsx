@@ -17,23 +17,23 @@ const Index = () => {
   const [isSignUp, setIsSignUp] = useState(false)
   const { toast } = useToast()
 
-  useEffect(() => {
-    async function fetchLists() {
-      try {
-        const { data, error } = await supabase
-          .from('lists')
-          .select('*')
-          .order('created_at', { ascending: false })
+  const fetchLists = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('lists')
+        .select('*')
+        .order('created_at', { ascending: false })
 
-        if (error) throw error
-        setLists(data || [])
-      } catch (error) {
-        console.error('Error fetching lists:', error)
-      } finally {
-        setLoadingLists(false)
-      }
+      if (error) throw error
+      setLists(data || [])
+    } catch (error) {
+      console.error('Error fetching lists:', error)
+    } finally {
+      setLoadingLists(false)
     }
+  }
 
+  useEffect(() => {
     fetchLists()
   }, [])
 
@@ -119,7 +119,7 @@ const Index = () => {
       </div>
 
       {user && (
-        <AdminDashboard userId={user.id} />
+        <AdminDashboard userId={user.id} onListCreated={fetchLists} />
       )}
 
       <div className="space-y-8">

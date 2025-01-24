@@ -46,7 +46,6 @@ const Index = () => {
           title: "Success!",
           description: "Please check your email for the confirmation link before signing in.",
         })
-        // Switch to sign in mode after successful signup
         setIsSignUp(false)
       } else {
         await signIn(email, password)
@@ -57,10 +56,20 @@ const Index = () => {
       }
     } catch (error: any) {
       console.error('Auth error:', error)
-      // Parse the error message from the JSON string if needed
+      
+      // Try to parse the error body if it exists
       let errorMessage = error.message
-      if (error.message.includes('"code":"email_not_confirmed"')) {
-        errorMessage = "Please check your email and confirm your account before signing in."
+      try {
+        if (error.body) {
+          const errorBody = JSON.parse(error.body)
+          if (errorBody.code === "email_not_confirmed") {
+            errorMessage = "Please check your email and confirm your account before signing in."
+          } else if (errorBody.message) {
+            errorMessage = errorBody.message
+          }
+        }
+      } catch (e) {
+        console.error('Error parsing error body:', e)
       }
       
       toast({

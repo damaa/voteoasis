@@ -43,18 +43,35 @@ const Index = () => {
       if (isSignUp) {
         await signUp(email, password)
         toast({
-          title: "Check your email",
-          description: "We sent you a confirmation link.",
+          title: "Success!",
+          description: "Please check your email for the confirmation link before signing in.",
         })
+        // Switch to sign in mode after successful signup
+        setIsSignUp(false)
       } else {
         await signIn(email, password)
       }
     } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: error.message,
-      })
+      // Handle specific error cases
+      if (error.message.includes("Email not confirmed")) {
+        toast({
+          variant: "destructive",
+          title: "Email not confirmed",
+          description: "Please check your email and click the confirmation link before signing in.",
+        })
+      } else if (error.message.includes("Invalid login credentials")) {
+        toast({
+          variant: "destructive",
+          title: "Invalid credentials",
+          description: "Please check your email and password and try again.",
+        })
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: error.message,
+        })
+      }
     }
   }
 
